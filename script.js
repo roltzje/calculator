@@ -3,7 +3,7 @@ let resultDisplay = document.querySelector('#result');
 let buttons = document.getElementById('btnContainer');
 
 
-let num1 = null, num2 = null, newOperator = null, oldOperator = null, tracker = null, result = 0; allowDel = false;
+let num1 = num2 = newOperator = oldOperator = tracker = null, result = 0, allowDel = false;
 
 const add = function(a,b) {
 	return a + b;
@@ -18,7 +18,7 @@ function multiply (a,b) {
 };
 
 function divide(a,b) {
-    return a / b;
+    return b / a;
 }
 
 function operate (operator, a, b) {
@@ -60,7 +60,7 @@ buttons.addEventListener('click', (event) => {
         if (['+', '-', '*', '/'].indexOf(tracker) >= 0) {
             resultDisplay.innerText="";
         }
-        tracker = event.target.id;
+        tracker = +event.target.id;
         allowDel = true;
         displayInput(event.target.id);
         displayResult(event.target.id);
@@ -68,34 +68,38 @@ buttons.addEventListener('click', (event) => {
 
     if (event.target.className == "opBtn") {
         oldOperator = newOperator;
-        tracker = newOperator = event.target.id;
-        let prevValue = parseInt(resultDisplay.innerText);
-        resultDisplay.innerText="";
 
-        displayInput(event.target.id);
-        
-        if (num1 == null) {
-            num1 = prevValue;
-        } else if (num2 == null) {
-            num2 = num1;
-            num1 = prevValue;
-        } else {
-            num2 = result;
-            num1 = prevValue;
-        }
+        if (tracker == '=' || typeof(tracker)=='number') {
+            tracker = newOperator = event.target.id;
 
-        if (num2 != null) {
+            let prevValue = +resultDisplay.innerText;
             resultDisplay.innerText="";
-            result = operate(oldOperator,num1,num2);
-            allowDel=false;
-            displayResult(result);
+            displayInput(event.target.id);
+            
+            if (num1 == null) {
+                num1 = prevValue;
+            } else if (num2 == null) {
+                num2 = num1;
+                num1 = prevValue;
+            } else {
+                num2 = result;
+                num1 = prevValue;
+            }
+    
+            if (num2 != null) {
+                resultDisplay.innerText="";
+                result = operate(oldOperator,num1,num2);
+                result = +String(result).slice(0,18);
+                allowDel=false;
+                displayResult(result);
+            }
         }
     };
     
     if (event.target.className == "clearBtn") {
         inputDisplay.innerText = "";
         resultDisplay.innerText  = "";
-        num1 = null, num2 = null, newOperator = null, oldOperator = null, tracker = null, result = 0;
+        num1 = num2 = newOperator = oldOperator = tracker = null, result = 0;
     };
 
     if (event.target.className == "equalBtn") {
@@ -103,25 +107,25 @@ buttons.addEventListener('click', (event) => {
         if (newOperator != null) {
             oldOperator = newOperator;
             tracker = newOperator = event.target.id;
+            let prevValue = +resultDisplay.innerText;
             
             if (num1 == null) {
-                num1 = parseInt(resultDisplay.innerText);
+                num1 = prevValue;
             } else if (num2 == null) {
                 num2 = num1;
-                num1 = parseInt(resultDisplay.innerText);
+                num1 = prevValue;
                 resultDisplay.innerText="";
             } else {
                 num2 = result;
-                num1 = parseInt(resultDisplay.innerText);
+                num1 = prevValue;
                 resultDisplay.innerText="";
             }
     
             if (num2 != null) {
                 resultDisplay.innerText="";
                 result = operate(oldOperator,num1,num2);
-                allowDel=false;
-                result = parseInt(String(result).slice(0,18));
-                console.log(typeof result);
+                allowDel = false;
+                result = +String(result).slice(0,18);
                 displayResult(result);
             }
         }

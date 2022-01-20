@@ -55,6 +55,15 @@
     border-radius: 10px;
 }
 
+#btnContainer button:hover {
+    background-color:rgba(86, 172, 221, 0.8);
+    transform: scale(1.02);
+}
+
+#btnContainer button:active {
+    transform: scale(.94);
+}
+
 #del {
     grid-column: 1 / 3;
 }
