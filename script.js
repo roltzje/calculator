@@ -2,12 +2,8 @@ let inputDisplay = document.querySelector('#input');
 let resultDisplay = document.querySelector('#result');
 let buttons = document.getElementById('btnContainer');
 
-let num1 = null;
-let num2 = null;
-let newOperator = null;
-let oldOperator = null;
-let tracker = null;
-let result = 0;
+
+let num1 = null, num2 = null, newOperator = null, oldOperator = null, tracker = null, result = 0; allowDel = false;
 
 const add = function(a,b) {
 	return a + b;
@@ -65,6 +61,7 @@ buttons.addEventListener('click', (event) => {
             resultDisplay.innerText="";
         }
         tracker = event.target.id;
+        allowDel = true;
         displayInput(event.target.id);
         displayResult(event.target.id);
     };
@@ -72,25 +69,25 @@ buttons.addEventListener('click', (event) => {
     if (event.target.className == "opBtn") {
         oldOperator = newOperator;
         tracker = newOperator = event.target.id;
+        let prevValue = parseInt(resultDisplay.innerText);
+        resultDisplay.innerText="";
 
         displayInput(event.target.id);
         
         if (num1 == null) {
-            num1 = parseInt(resultDisplay.innerText);
-            resultDisplay.innerText="";
+            num1 = prevValue;
         } else if (num2 == null) {
             num2 = num1;
-            num1 = parseInt(resultDisplay.innerText);
-            resultDisplay.innerText="";
+            num1 = prevValue;
         } else {
             num2 = result;
-            num1 = parseInt(resultDisplay.innerText);
-            resultDisplay.innerText="";
+            num1 = prevValue;
         }
 
         if (num2 != null) {
             resultDisplay.innerText="";
             result = operate(oldOperator,num1,num2);
+            allowDel=false;
             displayResult(result);
         }
     };
@@ -98,9 +95,11 @@ buttons.addEventListener('click', (event) => {
     if (event.target.className == "clearBtn") {
         inputDisplay.innerText = "";
         resultDisplay.innerText  = "";
+        num1 = null, num2 = null, newOperator = null, oldOperator = null, tracker = null, result = 0;
     };
 
     if (event.target.className == "equalBtn") {
+
         if (newOperator != null) {
             oldOperator = newOperator;
             tracker = newOperator = event.target.id;
@@ -120,9 +119,23 @@ buttons.addEventListener('click', (event) => {
             if (num2 != null) {
                 resultDisplay.innerText="";
                 result = operate(oldOperator,num1,num2);
+                allowDel=false;
+                result = parseInt(String(result).slice(0,18));
+                console.log(typeof result);
                 displayResult(result);
             }
         }
 
     };
+
+    if (event.target.className == "delBtn") {
+        if (resultDisplay.innerText != "" && allowDel) {
+            let x = resultDisplay.innerText.slice(0,-1);
+            let y = inputDisplay.innerText.slice(0,-1);
+            resultDisplay.innerText="";
+            inputDisplay.innerText="";
+            displayResult(x);
+            displayInput(y);
+        }
+    }
 });
